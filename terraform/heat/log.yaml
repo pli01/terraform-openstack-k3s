@@ -1,0 +1,244 @@
+heat_template_version: 2016-10-14
+
+description: Create a simple instance
+
+parameters:
+
+  key_name:
+    type: string
+    label: Name of keypair to assign to servers
+    description: key_name=foo
+    constraints:
+      - {custom_constraint: nova.keypair}
+
+  user_data:
+    type: string
+    default: ""
+
+  floating_ip_id:
+    type: string
+    label: The Floating id
+    description: floating_ip_id=
+
+  source_volid:
+    type: string
+
+  worker_network:
+    type: string
+    constraints:
+      - {custom_constraint: neutron.network}
+  worker_subnet:
+    type: string
+    constraints:
+      - {custom_constraint: neutron.subnet}
+
+  security_group:
+    type: comma_delimited_list
+
+  worker_flavor:
+    type: string
+    label: The flavor for worker Instances
+    description: flavor=small
+    constraints:
+      - {custom_constraint: nova.flavor}
+  worker_vol_type:
+    type: string
+    description: The volume type of the Cinder volume for instance
+    default: default
+
+  worker_data_volume_id:
+    type: string
+    description: id for data volume created by independent stack
+    default: ""
+
+  wait_condition_timeout:
+    type: number
+    default: 1200
+    description: timeout for the Wait Conditions
+
+
+outputs:
+  worker_id:
+    description: worker id
+    value: {get_resource: worker}
+  worker_private_ip_address:
+    description: worker private ip address
+    value: {get_attr: [worker_port, fixed_ips, 0, ip_address]}
+#    value: {get_attr: [worker, networks, {get_param: worker_network}, 0]}
+#  worker_public_ip_address:
+#    description: worker public ip address
+#    value: {get_attr: [worker, networks, {get_param: worker_network}, 1]}
+####  Debug worker object, tf outputs doesn t like this format
+#  worker_net_info:
+#    description: worker net info
+#    value:
+#      get_attr: [worker, networks]
+
+resources:
+  # Provide a curl CLI command to the cloud-init script.  Called on completion
+  # to indicate the status of the cloud-init process
+  wait_handle:
+    type: OS::Heat::WaitConditionHandle
+
+  # Wait for the node_boot (cloud-init) process to complete or time out
+  wait_condition:
+    type: OS::Heat::WaitCondition
+    properties:
+      handle: {get_resource: wait_handle}
+      timeout: {get_param: wait_condition_timeout}
+
+  worker_port:
+    type: OS::Neutron::Port
+    properties:
+      network: {get_param: worker_network}
+      security_groups: {get_param: security_group}
+      fixed_ips:
+        - subnet_id: {get_param: worker_subnet}
+
+  # worker compute
+  worker_vol:
+    type: OS::Cinder::Volume
+    properties:
+      volume_type: {get_param: worker_vol_type}
+      source_volid: {get_param: source_volid}
+
+  worker_data_volume_attachment:
+    type: Tf::Data::Volume
+    properties:
+      volume_id: { get_param: worker_data_volume_id }
+      instance_uuid: { get_resource: worker }
+
+  worker:
+    type: OS::Nova::Server
+    properties:
+      flavor: {get_param: worker_flavor}
+      key_name: {get_param: key_name}
+      networks:
+        - port: {get_resource: worker_port}
+      block_device_mapping:
+        - device_name: vda
+          volume_id: {get_resource: worker_vol}
+          delete_on_termination: true
+      config_drive: true
+      user_data_format: RAW
+      user_data: {get_resource: postinstall_worker}
+      user_data_update_policy: IGNORE
+
+  floating_ip:
+    type: OS::Neutron::FloatingIPAssociation
+    depends_on: [worker_port]
+    properties:
+      floatingip_id: {get_param: floating_ip_id}
+      port_id: {get_resource: worker_port}
+
+  # user data post install script
+  postinstall_worker:
+    type: "OS::Heat::MultipartMime"
+    properties:
+      parts:
+        - config: {get_resource: included_files}
+        # postconf in "user_data" param in multipart mime format
+        - config: {get_resource: start_postinstall}
+        - config: {get_param: user_data}
+          type: multipart
+        # (Optional) to add your custom postconf, uncomment this line and the worker_postconf section below
+        #- config: {get_resource: worker_postconf}
+        - config: {get_resource: finish_postinstall}
+
+  included_files:
+    type: "OS::Heat::CloudConfig"
+    properties:
+      cloud_config:
+        merge_how: dict(recurse_array)+list(append)
+        write_files:
+          - path: /home/debian/common_functions.sh
+            permissions: 0600
+            content:
+              str_replace:
+                template: |
+                  #!/bin/bash
+                  # Send success status to OpenStack WaitCondition
+                  # notify_status [SUCCESS|FAILURE] "message"
+                  function notify_status() {
+                     unset http_proxy
+                     unset https_proxy
+                     unset no_proxy
+                     ret=1
+                     case $1 in
+                        SUCCESS) ret=0 ;;
+                     esac
+                     wc_notify="$wc_notify"
+                    if ! type -p curl ; then
+                    cat <<EOF | sed -e 's|curl -i -X|wget -v -O- --content-on-error  --method|g; s| -H | --header |g; s|--data-binary|--body-data|g;' | bash
+                     ${wc_notify} --data-binary "{\"status\":\"$1\",\"reason\":\"$2\",\"data\":\"$2\"}"
+                  EOF
+                     else
+                     cat <<EOF | bash
+                     ${wc_notify} --data-binary \
+                         "{\"status\":\"$1\",\"reason\":\"$2\",\"data\":\"$2\"}"
+                  EOF
+                     fi
+                     exit $ret
+                  }
+                  function clean() {
+                   ret=$?
+                   [ "$ret" -gt 0 ] && notify_status FAILURE "Deploy $0: $ret"
+                   exit $ret
+                  }
+                  trap clean EXIT QUIT KILL
+                params:
+                  $wc_notify: {get_attr: [wait_handle, curl_cli]}
+
+  start_postinstall:
+    type: "OS::Heat::SoftwareConfig"
+    properties:
+      group: ungrouped
+      config:
+         str_replace:
+           template: |
+             #!/bin/bash
+             #
+             # start postinstall
+             # generate local.cfg
+             #
+             echo "# RUNNING: $(dirname $0)/$(basename $0)"
+             set -e -o pipefail
+             libdir=/home/debian
+             common_functions=${libdir}/common_functions.sh
+             [ -f ${common_functions} ] && source ${common_functions}
+             export no_proxy="$no_proxy,169.254.169.254"
+             wget_args="-q  -O -  -t 10 -T 10 -w 10"
+             meta_data_url="http://169.254.169.254/latest/meta-data/"
+             cat <<EOF > /home/debian/local.cfg
+             # get http://169.254.169.254/latest/meta-data"
+             export META_DATA_LOCAL_IPV4="$( eval wget $wget_args $meta_data_url/local-ipv4)"
+             export META_DATA_PUBLIC_IPV4="$( eval wget $wget_args $meta_data_url/public-ipv4)"
+             export META_DATA_AVAILABILITY_ZONE="$(eval wget $wget_args $meta_data_url/placement/availability-zone)"
+             export volume_id="$volume_id"
+             EOF
+           params:
+             $volume_id: { get_param: worker_data_volume_id }
+
+  finish_postinstall:
+    type: "OS::Heat::SoftwareConfig"
+    properties:
+      group: ungrouped
+      config: |
+         #!/bin/bash
+         #
+         # trigger wait condition
+         #
+         echo "# RUNNING: $(dirname $0)/$(basename $0)"
+         set -e -o pipefail
+         libdir=/home/debian
+         common_functions=${libdir}/common_functions.sh
+         [ -f ${common_functions} ] && source ${common_functions}
+         notify_status SUCCESS "finish_postinstall success ($ret)"
+
+  # place in the script your custom postconf
+#  worker_postconf:
+#    type: "OS::Heat::SoftwareConfig"
+#    properties:
+#      group: ungrouped
+#      config:
+#          get_file: config-scripts/worker_web_postconf.sh

@@ -1,0 +1,60 @@
+version: '3.5'
+
+services:
+  terraform:
+    image: cli/terraform:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        http_proxy: ${http_proxy}
+        https_proxy: ${http_proxy}
+        no_proxy: ${no_proxy}
+        PYPI_URL: ${PYPI_URL}
+        PYPI_HOST: ${PYPI_HOST}
+        MIRROR_DEBIAN: ${MIRROR_DEBIAN}
+    #tty: true
+    #stdin_open: true
+    networks:
+      - tf-network
+    env_file:
+      - ${PROJECT_BASENAME}.env
+    environment:
+      http_proxy: ${http_proxy}
+      https_proxy: ${http_proxy}
+      no_proxy: ${no_proxy}
+      TF_DATA_DIR: /data/.terraform
+      TF_IN_AUTOMATION: ${TF_IN_AUTOMATION:-true}
+      TF_VAR_FILE: ${TF_VAR_FILE}
+      TF_LOG: ${TF_LOG}
+      TF_CLI_ARGS: ${TF_CLI_ARGS}
+      TF_CLI_ARGS_init: ${TF_CLI_ARGS_init}
+      TF_CLI_ARGS_validate: ${TF_CLI_ARGS_validate}
+      TF_CLI_ARGS_plan: ${TF_CLI_ARGS_plan}
+      TF_CLI_ARGS_apply: ${TF_CLI_ARGS_apply}
+      TF_CLI_ARGS_destroy: ${TF_CLI_ARGS_destroy}
+      TF_CLI_ARGS_show: ${TF_CLI_ARGS_show}
+      TF_CLI_ARGS_output: ${TF_CLI_ARGS_output}
+      TAINT_ADDRESS: ${TAINT_ADDRESS}
+      OS_AUTH_URL: ${OS_AUTH_URL}
+      OS_REGION_NAME: ${OS_REGION_NAME}
+      OS_PROJECT_NAME: ${OS_PROJECT_NAME}
+      OS_PROJECT_DOMAIN_NAME: ${OS_PROJECT_DOMAIN_NAME}
+      OS_USER_DOMAIN_NAME: ${OS_USER_DOMAIN_NAME}
+      OS_IDENTITY_API_VERSION: ${OS_IDENTITY_API_VERSION}
+      OS_INTERFACE: ${OS_INTERFACE}
+      OS_PASSWORD: ${OS_PASSWORD}
+      OS_USERNAME: ${OS_USERNAME}
+      OS_CACERT: ${OS_CACERT}
+      OS_INSECURE: ${OS_INSECURE:-true}
+    volumes:
+      - ./terraform:/data/terraform
+      - ./examples:/data/examples
+      - ./Makefile:/data/Makefile
+      - ./config.auto.tfvars:/data/config.auto.tfvars
+networks:
+  tf-network:
+    driver: bridge
+    driver_opts:
+      com.docker.network.driver.mtu: 1450
+
