@@ -14,6 +14,11 @@ variable "maxcount" {
 variable "prefix_name" {
 }
 
+variable "app_name" {
+  default = "app"
+}
+
+
 variable "heat_wait_condition_timeout" {
   type    = number
   default = 1200

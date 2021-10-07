@@ -12,7 +12,7 @@ module "base" {
   vol_size          = var.vol_size
   image             = var.image
   most_recent_image = var.most_recent_image
-  app_count         = var.app_count
+  k3s_master_count  = var.k3s_master_count
   log_count         = var.log_count
   lb_count         = var.lb_count
 }

@@ -16,7 +16,7 @@ variable "http_proxy_count" {
   default = 1
 }
 
-variable "app_count" {
+variable "k3s_master_count" {
   type    = number
   default = 1
 }
@@ -92,7 +92,7 @@ variable "http_proxy_flavor" {
   type    = string
   default = "t1.small"
 }
-variable "app_flavor" {
+variable "k3s_master_flavor" {
   type    = string
   default = "t1.small"
 }
@@ -167,7 +167,7 @@ variable "metric_enable" {
   type = bool
   default = false
 }
-variable "app_metric_variables" {
+variable "k3s_master_metric_variables" {
    type = map
    default = {}
 }
@@ -177,11 +177,11 @@ variable "lb_metric_variables" {
 }
 
 
-variable "app_install_script" {
+variable "k3s_master_install_script" {
   default = ""
 }
 
-variable "app_variables" {
+variable "k3s_master_variables" {
    type = map
    default = {}
 }
@@ -212,10 +212,10 @@ variable "log_data_enable" {
 variable "log_data_size" {
   type = number
 }
-variable "app_data_enable" {
+variable "k3s_master_data_enable" {
   type = bool
 }
-variable "app_data_size" {
+variable "k3s_master_data_size" {
   type = number
 }
 

@@ -5,6 +5,7 @@ variable "prefix_name" {
   default = "test"
 }
 
+
 #### NEUTRON
 variable "external_network" {
   type    = string

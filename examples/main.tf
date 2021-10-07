@@ -1,5 +1,5 @@
-module "app-pool" {
-  #source                        = "github.com/pli01/terraform-openstack-app//terraform?ref=main"
+module "k3s-cluster" {
+  #source                        = "github.com/pli01/terraform-openstack-k3s//terraform?ref=main"
   source                        = "../terraform"
   prefix_name                   = var.prefix_name
   heat_wait_condition_timeout   = var.heat_wait_condition_timeout
@@ -34,13 +34,13 @@ module "app-pool" {
   docker_registry_username      = var.docker_registry_username
   docker_registry_token         = var.docker_registry_token
   metric_enable                 = var.metric_enable
-  app_count                     = var.app_count
-  app_flavor                    = var.app_flavor
-  app_metric_variables          = var.app_metric_variables
-  app_data_enable               = var.app_data_enable
-  app_data_size                 = var.app_data_size
-  app_install_script            = var.app_install_script
-  app_variables                 = var.app_variables
+  k3s_master_count              = var.k3s_master_count
+  k3s_master_flavor             = var.k3s_master_flavor
+  k3s_master_metric_variables   = var.k3s_master_metric_variables
+  k3s_master_data_enable        = var.k3s_master_data_enable
+  k3s_master_data_size          = var.k3s_master_data_size
+  k3s_master_install_script     = var.k3s_master_install_script
+  k3s_master_variables          = var.k3s_master_variables
   lb_metric_variables           = var.lb_metric_variables
   lb_count                      = var.lb_count
   lb_flavor                     = var.lb_flavor
