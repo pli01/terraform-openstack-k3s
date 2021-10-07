@@ -38,6 +38,18 @@ resource "openstack_networking_secgroup_rule_v2" "http_worker_lb_secgroup_rule_1
 }
 
 
+# Add https to lb
+resource "openstack_networking_secgroup_rule_v2" "https_worker_lb_secgroup_rule_1" {
+  direction         = "ingress"
+  ethertype         = "IPv4"
+  protocol          = "tcp"
+  port_range_min    = 443
+  port_range_max    = 443
+  remote_ip_prefix  = "0.0.0.0/0"
+  security_group_id = openstack_networking_secgroup_v2.lb_secgroup_1.id
+}
+
+
 # lb
 output "lb_id" {
   value = openstack_networking_floatingip_v2.lb[*].id
