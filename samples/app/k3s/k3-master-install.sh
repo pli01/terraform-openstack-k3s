@@ -3,6 +3,8 @@ set -x
 # insecure curl
 echo "-k" >> ~/.curlrc
 
+[ -n "${DOCKER_TOKEN}" -a -n "${DOCKER_LOGIN}" ] && echo "${DOCKER_TOKEN}" | docker login -u ${DOCKER_LOGIN}  --password-stdin
+
 # k3s configuration
 if [ -z "$K3S_TOKEN" ] ;then
   K3S_TOKEN=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 108  | head -n 1)
@@ -60,7 +62,7 @@ test_result=1
 timeout=$DEFAULT_TIMEOUT
 
 until [ "$timeout" -le 0 -o "$test_result" -eq "0" ] ; do
- (sudo kubectl rollout status  deployment/traefik -n kube-system -w  --timeout=${DEFAULT_TIMEOUT}s)
+ (sudo -E kubectl rollout status  deployment/traefik -n kube-system -w  --timeout=${DEFAULT_TIMEOUT}s)
  test_result=$?
  if [ "$test_result" -gt 0 ] ;then
      echo "Retry $timeout seconds: $test_result";
@@ -83,14 +85,14 @@ if [ -n "$DOCKERHUB_LOGIN" -a -n "$DOCKERHUB_TOKEN" ] ; then
 #
 # Automatically add imagePullSecrets to default ServiceAccount
 #
-  sudo kubectl patch serviceaccount default -p '{"imagePullSecrets": [{"name": "regcred"}]}'
+  sudo -E kubectl patch serviceaccount default -p '{"imagePullSecrets": [{"name": "regcred"}]}'
 fi
 
 #
 # add portainer on /portainer
 #
 # Hack: disable tls in traefik
-cat <<EOF | sudo kubectl create -f -
+cat <<EOF | sudo -E kubectl create -f -
 apiVersion: helm.cattle.io/v1
 kind: HelmChartConfig
 metadata:
@@ -101,31 +103,21 @@ spec:
     globalArguments:
     - "--serversTransport.insecureSkipVerify=true"
 EOF
-sudo kubectl rollout status  deployment/traefik -n kube-system -w  --timeout=${DEFAULT_TIMEOUT}s
+sudo -E kubectl rollout status  deployment/traefik -n kube-system -w  --timeout=${DEFAULT_TIMEOUT}s
 
 #
 # install portainer
 #
-sudo -E kubectl create -f https://raw.githubusercontent.com/portainer/k8s/master/deploy/manifests/portainer/portainer-lb.yaml
-
-#
-# Automatically add imagePullSecrets to default ServiceAccount in portainer namespace
-#
-if [ -n "$DOCKERHUB_LOGIN" -a -n "$DOCKERHUB_TOKEN" ] ; then
-  sudo kubectl patch serviceaccount default -n portainer -p '{"imagePullSecrets": [{"name": "regcred"}]}'
-fi
-
-#
-# imagePullPolicy = "IfNotPresent"
-#
-sudo kubectl get deployment -n portainer portainer -o json | \
-   jq '.spec.template.spec.containers[0].imagePullPolicy = "IfNotPresent"' | \
-   sudo  kubectl replace -f -
+sudo -E kubectl create -f https://raw.githubusercontent.com/portainer/k8s/master/deploy/manifests/portainer/portainer-lb.yaml --dry-ru
+n="client" -o json | \
+   jq '.|(if .kind == "Deployment" then .spec.template.spec.containers[0].imagePullPolicy = "IfNotPresent"  else . end)' | \
+   jq '.|(if .kind == "ServiceAccount" then . + {"imagePullSecrets": [{"name": "regcred"}]} else . end)'  | \
+   sudo -E kubectl apply -f -
 
 test_result=1
 timeout=$DEFAULT_TIMEOUT
 until [ "$timeout" -le 0 -o "$test_result" -eq "0" ] ; do
- ( sudo kubectl rollout status  deployment/portainer -n portainer -w  --timeout=${DEFAULT_TIMEOUT}s )
+ ( sudo -E kubectl rollout status  deployment/portainer -n portainer -w  --timeout=${DEFAULT_TIMEOUT}s )
  test_result=$?
  if [ "$test_result" -gt 0 ] ;then
      echo "Retry $timeout seconds: $test_result";

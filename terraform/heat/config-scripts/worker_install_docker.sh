@@ -102,7 +102,7 @@ cat <<EOF > /etc/docker/daemon.json
         "${nexus_server}"
     ],
     "registry-mirrors": [
-        "http://${nexus_server}"
+        "https://${nexus_server}"
     ],
     "log-driver": "journald",
     "mtu": 1450
