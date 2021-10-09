@@ -4,8 +4,9 @@ set -x
 echo "-k" >> ~/.curlrc
 
 # k3s configuration
-K3S_TOKEN=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 108  | head -n 1)
-
+if [ -z "$K3S_TOKEN" ] ;then
+  K3S_TOKEN=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 108  | head -n 1)
+fi
 INSTALL_K3S_EXEC="server"
 INSTALL_K3S_EXEC="$INSTALL_K3S_EXEC --docker"
 # in case of controle plane only without users workload
