@@ -11,6 +11,7 @@ if [ -z "$K3S_TOKEN" ] ;then
 fi
 INSTALL_K3S_EXEC="server"
 INSTALL_K3S_EXEC="$INSTALL_K3S_EXEC --docker"
+INSTALL_K3S_EXEC="$INSTALL_K3S_EXEC --tls-san $K3S_VIP"
 # in case of controle plane only without users workload
 # INSTALL_K3S_EXEC="$INSTALL_K3S_EXEC --node-taint CriticalAddonsOnly=true:NoExecute"
 
