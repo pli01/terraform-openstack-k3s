@@ -17,7 +17,7 @@ DEFAULT_TIMEOUT=${DEFAULT_TIMEOUT:-1200}
 test_result=1
 timeout=$DEFAULT_TIMEOUT
 until [ "$timeout" -le 0 -o "$test_result" -eq "0" ] ; do
-  ( ./kubectl get node -A  )
+  ( ./kubectl cluster-info )
   test_result=$?
   if [ "$test_result" -gt 0 ] ;then
      echo "Retry $timeout seconds: $test_result";
