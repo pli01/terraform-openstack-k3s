@@ -2,21 +2,22 @@
 
 [![CI](https://github.com/pli01/terraform-openstack-k3s/actions/workflows/main.yml/badge.svg)](https://github.com/pli01/terraform-openstack-k3s/actions/workflows/main.yml)
 
-Terraform modules which creates multiple customized functional resources on an Openstack Project/Tenant
+Terraform modules which creates a k3s cluster with multiple customized functional resources on an Openstack Project/Tenant
 
 This module create the following resources
   * 1 network/subnet
   * floating ips
-  * security group/rule for bastion/http_proxy/loadbalancer/logs/app
+  * security group/rule for bastion/http_proxy/loadbalancer/logs/k3s
   * 1 root volume acting as template snapshot volume for other instances
   * 1 bastion stack instance (for ssh acces)
   * 1 http_proxy stack instance (corporate proxy)
   * 1 log stack instance (override with your own url log_install_script)
-  * N load-balancer stack instances (override with your own url lb_install_script) with traefik http-provider to swift
-  * N app, application stack instances (override with your own url app_install_script)
+  * N user load-balancer stack instances (override with your own url lb_install_script) with traefik http-provider to swift
+  * N admin load-balancer stack instances (override with your own url lb_install_script) with nginx
+  * N k3s, application stack instances (override with your own url app_install_script)
   * Terraform backend state stored in swift
 
-![Schema](doc/terraform-openstack-k3s.png)
+![K3S cluster](doc/terraform-openstack-k3s-archi.png)
 
 # Notes:
 
@@ -31,10 +32,12 @@ this terraform module
   * customize cloud-init install script with install_script variables
 
 Custom install script used:
+  * [k3s cluster install](./samples/app/k3s/)
   * [load balancer docker stack (traefik+http-provider,nginx,openstack swift)](https://github.com/pli01/simple-traefik-http-provider)
+  * [load balancer docker stack (nginx ssl passthrough)](https://github.com/pli01/simple-nginx-k8s-passthrough)
   * [EFK log docker stack (Elastic,Kibana,Fluentd,Curator)](https://github.com/pli01/log-stack/)
   * [beat docker stack (metricbeat,heartbeat)](https://github.com/pli01/beat-stack/)
-  * [sample app ](./samples/)
+  * [k3s cluster install](./samples/app/k3s/)
 
 ### Terraform variables
 See details in `terraform/variables.tf` file and `examples` dir
