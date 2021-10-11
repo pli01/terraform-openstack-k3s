@@ -2,7 +2,11 @@
 
 [![CI](https://github.com/pli01/terraform-openstack-k3s/actions/workflows/main.yml/badge.svg)](https://github.com/pli01/terraform-openstack-k3s/actions/workflows/main.yml)
 
-Terraform modules which creates a k3s cluster with multiple customized functional resources on an Openstack Project/Tenant
+Terraform modules which creates a k3s cluster with portzainer and  multiple customized functional resources on an Openstack Project/Tenant
+
+Project used:
+* [k3s](https://k3s.io/)
+* [portainer](https://www.portainer.io/)
 
 This module create the following resources
   * 1 network/subnet
@@ -13,11 +17,13 @@ This module create the following resources
   * 1 http_proxy stack instance (corporate proxy)
   * 1 log stack instance (override with your own url log_install_script)
   * N user load-balancer stack instances (override with your own url lb_install_script) with traefik http-provider to swift
-  * N admin load-balancer stack instances (override with your own url lb_install_script) with nginx
+  * N admin load-balancer stack instances (override with your own url lb_admin_install_script) with nginx
   * N k3s, application stack instances (override with your own url app_install_script)
   * Terraform backend state stored in swift
 
-![K3S cluster](doc/terraform-openstack-k3s-archi.png)
+K3 cluster will contain the portainer dashboard for easy admin
+
+![K3S cluster archi](doc/terraform-openstack-k3s-archi.png)
 
 # Notes:
 
@@ -33,11 +39,10 @@ this terraform module
 
 Custom install script used:
   * [k3s cluster install](./samples/app/k3s/)
-  * [load balancer docker stack (traefik+http-provider,nginx,openstack swift)](https://github.com/pli01/simple-traefik-http-provider)
-  * [load balancer docker stack (nginx ssl passthrough)](https://github.com/pli01/simple-nginx-k8s-passthrough)
+  * [user load balancer docker stack (traefik+http-provider,nginx,openstack swift)](https://github.com/pli01/simple-traefik-http-provider)
+  * [admin load balancer docker stack (nginx ssl passthrough)](https://github.com/pli01/simple-nginx-k8s-passthrough)
   * [EFK log docker stack (Elastic,Kibana,Fluentd,Curator)](https://github.com/pli01/log-stack/)
   * [beat docker stack (metricbeat,heartbeat)](https://github.com/pli01/beat-stack/)
-  * [k3s cluster install](./samples/app/k3s/)
 
 ### Terraform variables
 See details in `terraform/variables.tf` file and `examples` dir
