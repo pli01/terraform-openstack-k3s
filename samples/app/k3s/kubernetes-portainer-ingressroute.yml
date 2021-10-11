@@ -1,0 +1,30 @@
+# Replace path with regex
+# ingress to redirect http://K3S/portainer -> portainer service
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: portainer-replacepathregex
+  namespace: portainer
+spec:
+  replacePathRegex:
+    regex: ^/portainer/(.*)
+    replacement: /$1
+
+---
+
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: portainer-ingress
+  namespace: portainer
+spec:
+  entryPoints:
+    - web
+  routes:
+  - kind: Rule
+    match: Host(`portainer`) && PathPrefix(`/portainer`)
+    services:
+      - name: portainer
+        port: 9443
+    middlewares:
+      - name: portainer-replacepathregex

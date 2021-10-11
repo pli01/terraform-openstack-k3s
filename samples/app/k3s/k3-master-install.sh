@@ -135,5 +135,5 @@ fi
 
 #
 # install ingressroute for portainer
-sudo -E kubectl create -f https://gist.githubusercontent.com/pli01/9c096fdda150ab6a55de106cafbd49e7/raw/ad7a7283819149f5c6a0739ef10a26ff61b7ec7e/02-kubernetes-portainer-ingressroute.yml
+sudo -E kubectl create -f https://raw.githubusercontent.com/pli01/terraform-openstack-k3s/main/samples/app/k3s/kubernetes-portainer-ingressroute.yml
 exit
