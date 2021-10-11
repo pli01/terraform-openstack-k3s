@@ -41,6 +41,15 @@ module "k3s-cluster" {
   k3s_master_data_size          = var.k3s_master_data_size
   k3s_master_install_script     = var.k3s_master_install_script
   k3s_master_variables          = var.k3s_master_variables
+
+  k3s_agent_count              = var.k3s_agent_count
+  k3s_agent_flavor             = var.k3s_agent_flavor
+  k3s_agent_metric_variables   = var.k3s_agent_metric_variables
+  k3s_agent_data_enable        = var.k3s_agent_data_enable
+  k3s_agent_data_size          = var.k3s_agent_data_size
+  k3s_agent_install_script     = var.k3s_agent_install_script
+  k3s_agent_variables          = var.k3s_agent_variables
+
   lb_admin_metric_variables           = var.lb_admin_metric_variables
   lb_admin_count                      = var.lb_admin_count
   lb_admin_flavor                     = var.lb_admin_flavor

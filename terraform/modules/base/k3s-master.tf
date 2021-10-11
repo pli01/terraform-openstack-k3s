@@ -32,8 +32,7 @@ resource "openstack_networking_secgroup_rule_v2" "k3s_worker_k3s_master_secgroup
   protocol          = "tcp"
   port_range_min    = 6443
   port_range_max    = 6443
-  remote_ip_prefix  = "0.0.0.0/0"
-  #remote_ip_prefix  = var.network_worker["cidr"]
+  remote_ip_prefix  = var.network_worker["cidr"]
   security_group_id = openstack_networking_secgroup_v2.k3s_master_secgroup_1.id
 }
 

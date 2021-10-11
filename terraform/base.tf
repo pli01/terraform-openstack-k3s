@@ -13,6 +13,7 @@ module "base" {
   image             = var.image
   most_recent_image = var.most_recent_image
   k3s_master_count  = var.k3s_master_count
+  k3s_agent_count  = var.k3s_agent_count
   log_count         = var.log_count
   lb_count         = var.lb_count
   lb_admin_count         = var.lb_admin_count

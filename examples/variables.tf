@@ -16,10 +16,6 @@ variable "http_proxy_count" {
   default = 1
 }
 
-variable "k3s_master_count" {
-  type    = number
-  default = 1
-}
 variable "log_count" {
   type    = number
   default = 1
@@ -78,10 +74,6 @@ variable "bastion_flavor" {
   default = "t1.small"
 }
 variable "http_proxy_flavor" {
-  type    = string
-  default = "t1.small"
-}
-variable "k3s_master_flavor" {
   type    = string
   default = "t1.small"
 }
@@ -156,19 +148,62 @@ variable "metric_enable" {
   type = bool
   default = false
 }
+
+variable "k3s_master_count" {
+  type    = number
+  default = 1
+}
+variable "k3s_master_flavor" {
+  type    = string
+  default = "t1.small"
+}
+variable "k3s_master_data_enable" {
+  type = bool
+}
+variable "k3s_master_data_size" {
+  type = number
+}
 variable "k3s_master_metric_variables" {
    type = map
    default = {}
 }
-
 variable "k3s_master_install_script" {
   default = ""
 }
-
 variable "k3s_master_variables" {
    type = map
    default = {}
 }
+
+#
+variable "k3s_agent_count" {
+  type    = number
+  default = 1
+}
+variable "k3s_agent_flavor" {
+  type    = string
+  default = "t1.small"
+}
+variable "k3s_agent_data_enable" {
+  type = bool
+}
+variable "k3s_agent_data_size" {
+  type = number
+}
+variable "k3s_agent_metric_variables" {
+   type = map
+   default = {}
+}
+variable "k3s_agent_install_script" {
+  default = ""
+}
+variable "k3s_agent_variables" {
+   type = map
+   default = {}
+}
+
+
+#
 variable "log_install_script" {
 }
 
@@ -231,12 +266,6 @@ variable "log_data_enable" {
   type = bool
 }
 variable "log_data_size" {
-  type = number
-}
-variable "k3s_master_data_enable" {
-  type = bool
-}
-variable "k3s_master_data_size" {
   type = number
 }
 
