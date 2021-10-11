@@ -81,7 +81,10 @@ fi
 # add dockerhub credentials
 #
 if [ -n "$DOCKERHUB_LOGIN" -a -n "$DOCKERHUB_TOKEN" ] ; then
-  sudo -E kubectl create secret docker-registry regcred --docker-server=https://index.docker.io/v1/ --docker-username=$DOCKERHUB_LOGIN --docker-password=$DOCKERHUB_TOKEN
+  sudo -E kubectl create secret docker-registry regcred \
+     --docker-server=https://index.docker.io/v1/ \
+     --docker-username=$DOCKERHUB_LOGIN \
+     --docker-password=$DOCKERHUB_TOKEN
 #
 # Automatically add imagePullSecrets to default ServiceAccount
 #
@@ -91,7 +94,7 @@ fi
 #
 # add portainer on /portainer
 #
-# Hack: disable tls in traefik
+# Hack: skip tls verify in traefik
 cat <<EOF | sudo -E kubectl create -f -
 apiVersion: helm.cattle.io/v1
 kind: HelmChartConfig
@@ -108,8 +111,7 @@ sudo -E kubectl rollout status  deployment/traefik -n kube-system -w  --timeout=
 #
 # install portainer
 #
-sudo -E kubectl create -f https://raw.githubusercontent.com/portainer/k8s/master/deploy/manifests/portainer/portainer-lb.yaml --dry-ru
-n="client" -o json | \
+sudo -E kubectl create -f https://raw.githubusercontent.com/portainer/k8s/master/deploy/manifests/portainer/portainer-lb.yaml --dry-run="client" -o json | \
    jq '.|(if .kind == "Deployment" then .spec.template.spec.containers[0].imagePullPolicy = "IfNotPresent"  else . end)' | \
    jq '.|(if .kind == "ServiceAccount" then . + {"imagePullSecrets": [{"name": "regcred"}]} else . end)'  | \
    sudo -E kubectl apply -f -
