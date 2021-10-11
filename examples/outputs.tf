@@ -46,3 +46,13 @@ output "lb_private_ip" {
 output "lb_public_ip" {
   value = module.k3s-cluster.lb_public_ip
 }
+
+output "lb_admin_id" {
+  value = module.k3s-cluster.lb_admin_id
+}
+output "lb_admin_private_ip" {
+  value = module.k3s-cluster.lb_admin_private_ip
+}
+output "lb_admin_public_ip" {
+  value = module.k3s-cluster.lb_admin_public_ip
+}

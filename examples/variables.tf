@@ -25,17 +25,6 @@ variable "log_count" {
   default = 1
 }
 
-# lb
-variable "lb_count" {
-  type    = number
-  default = 1
-}
-variable "lb_flavor" {
-  type    = string
-  default = "t1.small"
-}
-
-
 
 # Params file for variables
 
@@ -171,11 +160,6 @@ variable "k3s_master_metric_variables" {
    type = map
    default = {}
 }
-variable "lb_metric_variables" {
-   type = map
-   default = {}
-}
-
 
 variable "k3s_master_install_script" {
   default = ""
@@ -192,6 +176,42 @@ variable "log_variables" {
   type = map
   default = {}
 }
+
+# lb
+variable "lb_admin_count" {
+  type    = number
+  default = 1
+}
+variable "lb_admin_flavor" {
+  type    = string
+  default = "t1.small"
+}
+variable "lb_admin_metric_variables" {
+   type = map
+   default = {}
+}
+variable "lb_admin_install_script" {
+  default = ""
+}
+variable "lb_admin_variables" {
+  type = map
+  default = {}
+}
+
+
+# lb
+variable "lb_count" {
+  type    = number
+  default = 1
+}
+variable "lb_flavor" {
+  type    = string
+  default = "t1.small"
+}
+variable "lb_metric_variables" {
+   type = map
+   default = {}
+}
 variable "lb_install_script" {
   default = ""
 }
@@ -200,6 +220,7 @@ variable "lb_variables" {
   default = {}
 }
 
+#
 variable "bastion_data_enable" {
   type = bool
 }

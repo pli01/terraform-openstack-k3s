@@ -15,4 +15,5 @@ module "base" {
   k3s_master_count  = var.k3s_master_count
   log_count         = var.log_count
   lb_count         = var.lb_count
+  lb_admin_count         = var.lb_admin_count
 }
