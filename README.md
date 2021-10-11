@@ -2,11 +2,13 @@
 
 [![CI](https://github.com/pli01/terraform-openstack-k3s/actions/workflows/main.yml/badge.svg)](https://github.com/pli01/terraform-openstack-k3s/actions/workflows/main.yml)
 
-Terraform modules which creates a k3s cluster with portzainer and  multiple customized functional resources on an Openstack Project/Tenant
+Terraform modules which creates a k3s cluster with portainer and multiple customized functional resources on an Openstack Project/Tenant
 
 Project used:
 * [k3s](https://k3s.io/)
 * [portainer](https://www.portainer.io/)
+
+![K3S cluster archi](doc/terraform-openstack-k3s-archi.png)
 
 This module create the following resources
   * 1 network/subnet
@@ -23,7 +25,8 @@ This module create the following resources
 
 K3 cluster will contain the portainer dashboard for easy admin
 
-![K3S cluster archi](doc/terraform-openstack-k3s-archi.png)
+
+![Full archi](doc/terraform-openstack-k3s.png)
 
 # Notes:
 
