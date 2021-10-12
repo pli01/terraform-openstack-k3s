@@ -58,6 +58,10 @@ if [ "$test_result" -gt 0 ] ;then
         exit $test_result
 fi
 
+
+#
+# wait traefik deployment ready
+#
 test_result=1
 timeout=$DEFAULT_TIMEOUT
 
@@ -92,9 +96,9 @@ if [ -n "$DOCKERHUB_LOGIN" -a -n "$DOCKERHUB_TOKEN" ] ; then
 fi
 
 #
-# add portainer on /portainer
+# add portainer on /portainer path
 #
-# Hack: skip tls verify in traefik
+# Hack: skip tls verify backend in traefik
 cat <<EOF | sudo -E kubectl create -f -
 apiVersion: helm.cattle.io/v1
 kind: HelmChartConfig
@@ -109,11 +113,15 @@ EOF
 sudo -E kubectl rollout status  deployment/traefik -n kube-system -w  --timeout=${DEFAULT_TIMEOUT}s
 
 #
-# install portainer
+# install portainer with following specifications:
+#   use image pull secrets to download image from dockerhub auth registry
+#   download container if not present
+#   stick portainer on control-plane/master node only
 #
 sudo -E kubectl create -f https://raw.githubusercontent.com/portainer/k8s/master/deploy/manifests/portainer/portainer-lb.yaml --dry-run="client" -o json | \
-   jq '.|(if .kind == "Deployment" then .spec.template.spec.containers[0].imagePullPolicy = "IfNotPresent"  else . end)' | \
    jq '.|(if .kind == "ServiceAccount" then . + {"imagePullSecrets": [{"name": "regcred"}]} else . end)'  | \
+   jq '.|(if .kind == "Deployment" then .spec.template.spec.containers[0].imagePullPolicy = "IfNotPresent"  else . end)' | \
+   jq '.|(if .kind == "Deployment" then .spec.template.spec.tolerations = [{"key":"CriticalAddonsOnly","operator":"Exists"},{"key":"node-role.kubernetes.io/master","operator":"Exists","effect":"NoSchedule"},{"key":"node-role.kubernetes.io/control-plane","operator":"Exists","effect":"NoSchedule"}] else . end)' | \
    sudo -E kubectl apply -f -
 
 test_result=1
@@ -135,5 +143,6 @@ fi
 
 #
 # install ingressroute for portainer
+#
 sudo -E kubectl create -f https://raw.githubusercontent.com/pli01/terraform-openstack-k3s/main/samples/app/k3s/kubernetes-portainer-ingressroute.yml
 exit
