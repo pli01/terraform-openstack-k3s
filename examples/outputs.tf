@@ -34,10 +34,6 @@ output "k3s_agent_id" {
 output "k3s_agent_private_ip" {
   value = module.k3s-cluster.k3s_agent_private_ip
 }
-output "k3s_agent_public_ip" {
-  value = module.k3s-cluster.k3s_agent_public_ip
-}
-
 
 output "log_id" {
   value = module.k3s-cluster.log_id

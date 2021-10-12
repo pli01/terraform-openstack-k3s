@@ -6,7 +6,7 @@ resource "openstack_orchestration_stack_v1" "app" {
   # override heat parameters
   parameters = {
     wait_condition_timeout = var.heat_wait_condition_timeout
-    floating_ip_id  = element(var.fip, count.index)
+    floating_ip_id  = length(var.fip) > 0 ? element(var.fip, count.index) : null
     security_group  = var.security_group
     worker_network  = var.network
     worker_subnet   = var.subnet
@@ -22,6 +22,7 @@ resource "openstack_orchestration_stack_v1" "app" {
     #Bin = "\n"
     Bin = templatefile("${path.module}/../../heat/app-env.yaml.tpl", {
       app_data_enable = var.app_data_enable
+      app_fip_enable  = length(var.fip) > 0 ? true : false
        })
     # Bin = file("heat/app-param.yaml")
   }

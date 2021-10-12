@@ -19,6 +19,7 @@ parameters:
     type: string
     label: The Floating id
     description: floating_ip_id=
+    default: ""
 
   source_volid:
     type: string
@@ -125,7 +126,7 @@ resources:
       user_data_update_policy: IGNORE
 
   floating_ip:
-    type: OS::Neutron::FloatingIPAssociation
+    type: Tf::Neutron::FloatingIPAssociation
     depends_on: [worker_port]
     properties:
       floatingip_id: {get_param: floating_ip_id}

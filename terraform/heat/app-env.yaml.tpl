@@ -4,4 +4,9 @@ resource_registry:
 %{ else ~}
    Tf::Data::Volume: OS::Heat::None
 %{ endif ~}
+%{ if app_fip_enable ~}
+   Tf::Neutron::FloatingIPAssociation: OS::Neutron::FloatingIPAssociation
+%{ else ~}
+   Tf::Neutron::FloatingIPAssociation: OS::Heat::None
+%{ endif ~}
 

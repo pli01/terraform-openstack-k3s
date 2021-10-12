@@ -3,11 +3,6 @@ variable "k3s_agent_count" {
   default = 1
 }
 
-resource "openstack_networking_floatingip_v2" "k3s_agent" {
-  count = var.k3s_agent_count
-  pool  = var.external_network
-}
-
 # k3s_agent
 resource "openstack_networking_secgroup_v2" "k3s_agent_secgroup_1" {
   name        = format("%s-%s", var.prefix_name, "k3s_agent_secgroup_1")
@@ -50,12 +45,6 @@ resource "openstack_networking_secgroup_rule_v2" "k3s_kubelet_worker_k3s_agent_s
 }
 
 # k3s_agent
-output "k3s_agent_id" {
-  value = openstack_networking_floatingip_v2.k3s_agent[*].id
-}
-output "k3s_agent_address" {
-  value = openstack_networking_floatingip_v2.k3s_agent[*].address
-}
 output "k3s_agent_secgroup_id" {
   value = openstack_networking_secgroup_v2.k3s_agent_secgroup_1.id
 }

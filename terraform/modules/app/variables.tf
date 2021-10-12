@@ -1,4 +1,6 @@
-variable "fip" {}
+variable "fip" {
+  default = []
+}
 
 variable "network" {}
 variable "subnet" {}
