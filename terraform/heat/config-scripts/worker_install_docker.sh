@@ -90,7 +90,10 @@ pip install $pip_args "docker-compose==$docker_compose_version"
 # config docker proxy
 
 #docker_data_root="/DATA/docker"
-docker_data_root="${docker_data_root:-}"
+docker_data_root="${docker_data_root:-/DATA/docker}"
+if [ -n "${docker_data_root}" ] ; then
+ mkdir -p "${docker_data_root}"
+fi
 
 cat <<EOF > /etc/docker/daemon.json
 {
