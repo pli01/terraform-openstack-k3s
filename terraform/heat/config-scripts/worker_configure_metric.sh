@@ -32,7 +32,7 @@ export DOCKERHUB_TOKEN="$dockerhub_token"
 export METRIC_INSTALL_SCRIPT="$metric_install_script"
 
 (
-eval curl -kL -s \${METRIC_INSTALL_SCRIPT} | \
+eval curl -kL -s ${METRIC_INSTALL_SCRIPT} | \
  bash
 ) || exit $?
 EOF
