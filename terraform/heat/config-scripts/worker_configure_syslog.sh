@@ -7,7 +7,7 @@ libdir=/home/debian
 [ -f ${libdir}/config.cfg ] && source ${libdir}/config.cfg
 [ -f ${libdir}/common_functions.sh ] && source ${libdir}/common_functions.sh
 
-echo "## configuration syslog" 
+echo "## configuration syslog"
 apt-get -q update
 apt-get -qy install jq
 

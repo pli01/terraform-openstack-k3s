@@ -89,15 +89,18 @@ pip install $pip_args "docker-compose==$docker_compose_version"
 # post conf
 # config docker proxy
 
-#docker_data_root="/DATA/docker"
-docker_data_root="${docker_data_root:-/DATA/docker}"
+#
+# docker_data_root="${docker_data_root:-/DATA/docker}"
+# Warning if containers exist in dataroot
+#
+docker_data_root="${docker_data_root:-}"
 if [ -n "${docker_data_root}" ] ; then
- mkdir -p "${docker_data_root}"
+  [ -d "${docker_data_root}" ] || mkdir -p "${docker_data_root}"
 fi
 
 cat <<EOF > /etc/docker/daemon.json
 {
-    "data-root": "$docker_data_root",
+    "data-root": "${docker_data_root}",
     "dns": ${dns_nameservers},
     "dns-search": ${dns_domainname},
     "insecure-registries": [
