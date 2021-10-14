@@ -22,7 +22,7 @@ variable "k3s_agent_name" {
 
 
 variable "k3s_agent_install_script" {
-  default = "https://raw.githubusercontent.com/pli01/terraform-openstack-k3s/main/samples/app/whoami/whoami-docker-deploy.sh"
+  default = "https://raw.githubusercontent.com/pli01/terraform-openstack-k3s/main/samples/app/k3s/k3-agent-install.sh"
 }
 variable "k3s_agent_variables" {
     type = map

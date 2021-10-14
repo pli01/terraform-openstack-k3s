@@ -22,7 +22,7 @@ variable "k3s_master_name" {
 
 
 variable "k3s_master_install_script" {
-  default = "https://raw.githubusercontent.com/pli01/terraform-openstack-k3s/main/samples/app/whoami/whoami-docker-deploy.sh"
+  default = "https://raw.githubusercontent.com/pli01/terraform-openstack-k3s/main/samples/app/k3s/k3-master-install.sh"
 }
 variable "k3s_master_variables" {
     type = map
