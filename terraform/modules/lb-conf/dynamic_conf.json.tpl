@@ -5,7 +5,9 @@
                 "web"
             ],
 %{ if traefik_rule_host != "" ~}
-            "rule": "Host(`${traefik_rule_host}`)",
+            "rule": "Host(${traefik_rule_host})",
+%{ else ~}
+            "rule": "Path(`/`)",
 %{ endif ~}
             "service": "whoami"
         }

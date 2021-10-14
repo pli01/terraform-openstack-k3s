@@ -34,6 +34,7 @@ module "k3s-cluster" {
   docker_registry_username      = var.docker_registry_username
   docker_registry_token         = var.docker_registry_token
   metric_enable                 = var.metric_enable
+  traefik_user_hostname         = var.traefik_user_hostname
   k3s_master_count              = var.k3s_master_count
   k3s_master_flavor             = var.k3s_master_flavor
   k3s_master_metric_variables   = var.k3s_master_metric_variables

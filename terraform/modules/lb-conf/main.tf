@@ -15,7 +15,7 @@ resource "openstack_objectstorage_object_v1" "dynamic_conf" {
 
   content_type = "application/json"
   content = templatefile("${path.module}/dynamic_conf.json.tpl", {
-      traefik_rule_host = var.traefik_rule_host
+      traefik_rule_host = join(",",formatlist("`%s`",var.traefik_rule_host))
       traefik_loadbalancers_servers = var.traefik_loadbalancers_servers
      })
 }
