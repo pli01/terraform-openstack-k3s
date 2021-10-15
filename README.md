@@ -2,11 +2,18 @@
 
 [![CI](https://github.com/pli01/terraform-openstack-k3s/actions/workflows/main.yml/badge.svg)](https://github.com/pli01/terraform-openstack-k3s/actions/workflows/main.yml)
 
-Terraform modules which creates a k3s cluster with portainer and multiple customized functional resources on an Openstack Project/Tenant
+Terraform modules which creates a k3s cluster with portainer webadmin and multiple customized functional resources on an Openstack Project/Tenant
 
 Project used:
 * [k3s](https://k3s.io/)
 * [portainer](https://www.portainer.io/)
+
+
+Workload users are accessible through a dedicated URL from the `lb` instance
+Administration of the kubernetes cluster is accesible through a decicated URL from the `lb_admin` instance, allowing:
+* access to the kubernetes API
+* administration by a web interface based on portainer.io
+portainer allows you to have authentification and console / web access to the cluster as well as to the pod / container!
 
 ![K3S cluster archi](doc/terraform-openstack-k3s-archi.png)
 
@@ -20,7 +27,8 @@ This module create the following resources
   * 1 log stack instance (override with your own url log_install_script)
   * N user load-balancer stack instances (override with your own url lb_install_script) with traefik http-provider to swift
   * N admin load-balancer stack instances (override with your own url lb_admin_install_script) with nginx
-  * N k3s, application stack instances (override with your own url app_install_script)
+  * 1 k3s master stack instance (override with your own url app_install_script)
+  * N k3s agent stack instances (override with your own url app_install_script)
   * Terraform backend state stored in swift
 
 K3 cluster will contain the portainer dashboard for easy admin
