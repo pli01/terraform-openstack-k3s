@@ -112,16 +112,34 @@ spec:
 EOF
 sudo -E kubectl rollout status  deployment/traefik -n kube-system -w  --timeout=${DEFAULT_TIMEOUT}s
 
+
+#
+# optional install portainer agent (9001)
+#
+sudo -E kubectl create -f https://downloads.portainer.io/portainer-agent-ce29-k8s-lb.yaml --dry-run="client" -o json | \
+   jq '.|(if .kind == "ServiceAccount" then . + {"imagePullSecrets": [{"name": "regcred"}]} else . end)'  | \
+   jq '.|(if .kind == "Deployment" then .spec.template.spec.containers[0].imagePullPolicy = "IfNotPresent"  else . end)' | \
+   jq '.|(if .kind == "Deployment" then .spec.template.spec.tolerations = [{"key":"CriticalAddonsOnly","operator":"Exists"},{"key":"node-role.kubernetes.io/master","operator":"Exists","effect":"NoSchedule"},{"key":"node-role.kubernetes.io/control-plane","operator":"Exists","effect":"NoSchedule"}] else . end)' | \
+   sudo -E kubectl apply -f -
+
 #
 # install portainer with following specifications:
-#   use image pull secrets to download image from dockerhub auth registry
-#   download container if not present
-#   stick portainer on control-plane/master node only
+#   * use image pull secrets to download image from dockerhub auth registry
+#   * download container if not present
+#   * stick portainer to control-plane/master node only
+#   * add http_proxy,no_proxy env variable (corporate proxy)
 #
+MASTER_IP=$(( /sbin/ip add show dev eth0 2>&- || /sbin/ifconfig eth0  2>&- || /sbin/ifconfig en0 2>&- ) | awk '{ print $2}' | grep -E -o "([0-9]{1,3}[\.]){3}[0-9]{1,3}")
+
 sudo -E kubectl create -f https://raw.githubusercontent.com/portainer/k8s/master/deploy/manifests/portainer/portainer-lb.yaml --dry-run="client" -o json | \
    jq '.|(if .kind == "ServiceAccount" then . + {"imagePullSecrets": [{"name": "regcred"}]} else . end)'  | \
    jq '.|(if .kind == "Deployment" then .spec.template.spec.containers[0].imagePullPolicy = "IfNotPresent"  else . end)' | \
    jq '.|(if .kind == "Deployment" then .spec.template.spec.tolerations = [{"key":"CriticalAddonsOnly","operator":"Exists"},{"key":"node-role.kubernetes.io/master","operator":"Exists","effect":"NoSchedule"},{"key":"node-role.kubernetes.io/control-plane","operator":"Exists","effect":"NoSchedule"}] else . end)' | \
+   jq \
+    --arg http_proxy "$http_proxy" \
+    --arg https_proxy "$https_proxy" \
+    --arg no_proxy "$no_proxy,kubernetes.default.svc,$MASTER_IP" \
+   '.|(if .kind == "Deployment" then .spec.template.spec.containers[0].env = [{"name":"HTTP_PROXY","value":$http_proxy},{"name":"HTTPS_PROXY","value":$http_proxy},{"name":"NO_PROXY","value":$no_proxy}] else . end)' | \
    sudo -E kubectl apply -f -
 
 test_result=1
