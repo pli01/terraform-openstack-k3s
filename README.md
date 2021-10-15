@@ -8,11 +8,12 @@ Project used:
 * [k3s](https://k3s.io/)
 * [portainer](https://www.portainer.io/)
 
+Workload users are accessible through a dedicated URL from the `lb` instance.
 
-Workload users are accessible through a dedicated URL from the `lb` instance
-Administration of the kubernetes cluster is accesible through a decicated URL from the `lb_admin` instance, allowing:
+Administration of the kubernetes cluster is accessible through a decicated URL from the `lb_admin` instance, allowing:
 * access to the kubernetes API
 * administration by a web interface based on portainer.io
+
 portainer allows you to have authentification and console / web access to the cluster as well as to the pod / container!
 
 ![K3S cluster archi](doc/terraform-openstack-k3s-archi.png)
