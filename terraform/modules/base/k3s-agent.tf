@@ -44,6 +44,29 @@ resource "openstack_networking_secgroup_rule_v2" "k3s_kubelet_worker_k3s_agent_s
   security_group_id = openstack_networking_secgroup_v2.k3s_agent_secgroup_1.id
 }
 
+# Add http to k3s_agent
+resource "openstack_networking_secgroup_rule_v2" "http_worker_k3s_agent_secgroup_rule_1" {
+  direction         = "ingress"
+  ethertype         = "IPv4"
+  protocol          = "tcp"
+  port_range_min    = 80
+  port_range_max    = 80
+  remote_ip_prefix  = var.network_worker["cidr"]
+  security_group_id = openstack_networking_secgroup_v2.k3s_agent_secgroup_1.id
+}
+
+# Add https to k3s_agent
+resource "openstack_networking_secgroup_rule_v2" "https_worker_k3s_agent_secgroup_rule_1" {
+  direction         = "ingress"
+  ethertype         = "IPv4"
+  protocol          = "tcp"
+  port_range_min    = 443
+  port_range_max    = 443
+  remote_ip_prefix  = var.network_worker["cidr"]
+  security_group_id = openstack_networking_secgroup_v2.k3s_agent_secgroup_1.id
+}
+
+
 # k3s_agent
 output "k3s_agent_secgroup_id" {
   value = openstack_networking_secgroup_v2.k3s_agent_secgroup_1.id

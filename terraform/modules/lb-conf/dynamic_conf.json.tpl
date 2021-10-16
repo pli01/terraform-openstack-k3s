@@ -1,3 +1,4 @@
+{
 "http": {
     "routers": {
         "whoami": {
@@ -24,4 +25,5 @@ ${jsonencode({
 %{ endif ~}
         }
     }
+}
 }
