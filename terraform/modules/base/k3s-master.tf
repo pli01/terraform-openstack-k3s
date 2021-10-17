@@ -3,11 +3,6 @@ variable "k3s_master_count" {
   default = 1
 }
 
-resource "openstack_networking_floatingip_v2" "k3s_master" {
-  count = var.k3s_master_count
-  pool  = var.external_network
-}
-
 # k3s_master
 resource "openstack_networking_secgroup_v2" "k3s_master_secgroup_1" {
   name        = format("%s-%s", var.prefix_name, "k3s_master_secgroup_1")
@@ -59,7 +54,6 @@ resource "openstack_networking_secgroup_rule_v2" "k3s_kubelet_worker_k3s_master_
   security_group_id = openstack_networking_secgroup_v2.k3s_master_secgroup_1.id
 }
 
-
 # Add http to k3s_master
 resource "openstack_networking_secgroup_rule_v2" "http_worker_k3s_master_secgroup_rule_1" {
   direction         = "ingress"
@@ -84,12 +78,6 @@ resource "openstack_networking_secgroup_rule_v2" "https_worker_k3s_master_secgro
 
 
 # k3s_master
-output "k3s_master_id" {
-  value = openstack_networking_floatingip_v2.k3s_master[*].id
-}
-output "k3s_master_address" {
-  value = openstack_networking_floatingip_v2.k3s_master[*].address
-}
 output "k3s_master_secgroup_id" {
   value = openstack_networking_secgroup_v2.k3s_master_secgroup_1.id
 }

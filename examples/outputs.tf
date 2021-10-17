@@ -24,9 +24,6 @@ output "k3s_master_id" {
 output "k3s_master_private_ip" {
   value = module.k3s-cluster.k3s_master_private_ip
 }
-output "k3s_master_public_ip" {
-  value = module.k3s-cluster.k3s_master_public_ip
-}
 
 output "k3s_agent_id" {
   value = module.k3s-cluster.k3s_agent_id

@@ -46,7 +46,6 @@ module "k3s-master" {
   prefix_name              = var.prefix_name
   app_name                 = var.k3s_master_name
   heat_wait_condition_timeout =  var.heat_wait_condition_timeout
-  fip                      = module.base.k3s_master_id
   network                  = module.base.network_id
   subnet                   = module.base.subnet_id
   source_volid             = module.base.root_volume_id
@@ -89,7 +88,6 @@ module "k3s-master" {
 locals {
   k3s_master_private_ip        = flatten(module.k3s-master[*].private_ip)
   k3s_master_id                = flatten(module.k3s-master[*].id)
-  k3s_master_public_ip         = flatten(module.base[*].k3s_master_address)
 }
 
 output "k3s_master_id" {
@@ -98,8 +96,4 @@ output "k3s_master_id" {
 output "k3s_master_private_ip" {
   value = local.k3s_master_private_ip
 }
-output "k3s_master_public_ip" {
-  value = local.k3s_master_public_ip
-}
-
 
