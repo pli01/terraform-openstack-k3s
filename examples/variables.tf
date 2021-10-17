@@ -1,7 +1,10 @@
 variable "traefik_user_hostname" {
-  default = "my-site.example.org"
+  default = ["my-site.example.org"]
 }
 
+variable "traefik_admin_hostname" {
+  default = ["admin-site.example.org"]
+}
 
 variable "prefix_name" {
   default = "test"

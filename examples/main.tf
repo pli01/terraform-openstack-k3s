@@ -35,6 +35,7 @@ module "k3s-cluster" {
   docker_registry_token         = var.docker_registry_token
   metric_enable                 = var.metric_enable
   traefik_user_hostname         = var.traefik_user_hostname
+  traefik_admin_hostname     = var.traefik_admin_hostname
   k3s_master_count              = var.k3s_master_count
   k3s_master_flavor             = var.k3s_master_flavor
   k3s_master_metric_variables   = var.k3s_master_metric_variables
@@ -43,19 +44,19 @@ module "k3s-cluster" {
   k3s_master_install_script     = var.k3s_master_install_script
   k3s_master_variables          = var.k3s_master_variables
 
-  k3s_agent_count              = var.k3s_agent_count
-  k3s_agent_flavor             = var.k3s_agent_flavor
-  k3s_agent_metric_variables   = var.k3s_agent_metric_variables
-  k3s_agent_data_enable        = var.k3s_agent_data_enable
-  k3s_agent_data_size          = var.k3s_agent_data_size
-  k3s_agent_install_script     = var.k3s_agent_install_script
-  k3s_agent_variables          = var.k3s_agent_variables
+  k3s_agent_count               = var.k3s_agent_count
+  k3s_agent_flavor              = var.k3s_agent_flavor
+  k3s_agent_metric_variables    = var.k3s_agent_metric_variables
+  k3s_agent_data_enable         = var.k3s_agent_data_enable
+  k3s_agent_data_size           = var.k3s_agent_data_size
+  k3s_agent_install_script      = var.k3s_agent_install_script
+  k3s_agent_variables           = var.k3s_agent_variables
 
-  lb_admin_metric_variables           = var.lb_admin_metric_variables
-  lb_admin_count                      = var.lb_admin_count
-  lb_admin_flavor                     = var.lb_admin_flavor
-  lb_admin_install_script             = var.lb_admin_install_script
-  lb_admin_variables                  = var.lb_admin_variables
+  lb_admin_metric_variables     = var.lb_admin_metric_variables
+  lb_admin_count                = var.lb_admin_count
+  lb_admin_flavor               = var.lb_admin_flavor
+  lb_admin_install_script       = var.lb_admin_install_script
+  lb_admin_variables            = var.lb_admin_variables
 
   lb_metric_variables           = var.lb_metric_variables
   lb_count                      = var.lb_count

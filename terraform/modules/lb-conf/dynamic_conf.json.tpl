@@ -1,5 +1,5 @@
 {
-"http": {
+  "http": {
     "routers": {
         "whoami": {
             "entryPoints": [
@@ -25,5 +25,5 @@ ${jsonencode({
 %{ endif ~}
         }
     }
-}
+  }
 }

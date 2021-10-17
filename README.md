@@ -27,9 +27,9 @@ This module create the following resources
   * 1 http_proxy stack instance (corporate proxy)
   * 1 log stack instance (override with your own url log_install_script)
   * N user load-balancer stack instances (override with your own url lb_install_script) with traefik http-provider to swift
-  * N admin load-balancer stack instances (override with your own url lb_admin_install_script) with nginx
-  * 1 k3s master stack instance (override with your own url app_install_script)
-  * N k3s agent stack instances (override with your own url app_install_script)
+  * N admin load-balancer stack instances (override with your own url lb_admin_install_script) with traefik http-provider to swift
+  * 1 k3s master stack instance (override with your own url k3_master_install_script)
+  * N k3s agent stack instances (override with your own url k3s_agent_install_script)
   * Terraform backend state stored in swift
 
 K3 cluster will contain the portainer dashboard for easy admin
