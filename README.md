@@ -8,13 +8,15 @@ Project used:
 * [k3s](https://k3s.io/)
 * [portainer](https://www.portainer.io/)
 
-Workload users are accessible through a dedicated URL from the `lb` instance.
+Workload users are accessible through a dedicated URL from the `lb` instance and Floating ip
 
-Administration of the kubernetes cluster is accessible through a decicated URL from the `lb_admin` instance, allowing:
+Administration of the kubernetes cluster is accessible through a decicated URL from the `lb_admin` instance and Floating ip, allowing:
 * access to the kubernetes API
 * administration by a web interface based on portainer.io
 
-portainer allows you to have authentification and console / web access to the cluster as well as to the pod / container!
+`k3s.io` allows you to easily deploy a fully kubernetes cluster in 2 steps
+`portainer.io` allows you to have manage kubernetes cluster, users workload, authentification , console / web access to the cluster as well as to the pod / container!
+
 
 ![K3S cluster archi](doc/terraform-openstack-k3s-archi.png)
 
@@ -51,8 +53,7 @@ this terraform module
 
 Custom install script used:
   * [k3s cluster install](./samples/app/k3s/)
-  * [user load balancer docker stack (traefik+http-provider,nginx,openstack swift)](https://github.com/pli01/simple-traefik-http-provider)
-  * [admin load balancer docker stack (nginx ssl passthrough)](https://github.com/pli01/simple-nginx-k8s-passthrough)
+  * [user and admin load balancer docker stack (traefik+http-provider,nginx,openstack swift)](https://github.com/pli01/simple-traefik-http-provider)
   * [EFK log docker stack (Elastic,Kibana,Fluentd,Curator)](https://github.com/pli01/log-stack/)
   * [beat docker stack (metricbeat,heartbeat)](https://github.com/pli01/beat-stack/)
 
@@ -89,18 +90,37 @@ Common variables
 | `log_variables` | log_variables map ({ VAR=value, VAR2=value2}) | `{}` |
 | `metric_enable` | metric_enable on app instances (false, true) | `false` |
 | `metric_install_script` | metric_install_script url to deploy | `https://raw.githubusercontent.com/pli01/beat-stack/master/ci/docker-deploy.sh` |
+||||
+| `traefik_user_hostname` | user URL | `["www.k3s.dev.my-domain.org","mysite.org"]` |
+||||
 | `lb_count` | lb instance count (0 = disable, 1=enable) | `1` |
 | `lb_flavor` | lb flavor | `standard-2.2` |
 | `lb_metric_variables` | metric_enable on app instances | `{}` |
 | `lb_install_script` | lb install script url to deploy | `https://raw.githubusercontent.com/pli01/simple-traefik-http-provider/main/ci/docker-deploy.sh` |
 | `lb_variables` | lb_variables map ({ VAR=value, VAR2=value2}) | `{}` |
-| `app_count` | app instance count (0 = disable, 1,2,3...N) | `1` |
-| `app_flavor` | app flavor | `standard-2.2` |
-| `app_data_enable` | data added disk (true or false)| `false` |
-| `app_data_size` | data disk size (Go)| `0` |
-| `app_metric_variables` | metric_enable on app instances ({ VAR=value, VAR2=value2}) | `{}` |
-| `app_install_script` | app install script url to deploy | `https://raw.githubusercontent.com/pli01/terraform-openstack-k3s/main/samples/app/whoami/whoami-docker-deploy.sh` |
-| `app_variables` | app_variables map ({ VAR=value, VAR2=value2}) | `{}` |
+||||
+| `traefik_admin_hostname` | kubernetes Admin URL | `["k3s-admin.dev.my-domain.org"]` |
+| `lb_admin_count` | lb instance count (0 = disable, 1=enable) | `1` |
+| `lb_admin_flavor` | lb flavor | `standard-2.2` |
+| `lb_admin_metric_variables` | metric_enable on app instances | `{}` |
+| `lb_admin_install_script` | lb install script url to deploy | `https://raw.githubusercontent.com/pli01/simple-traefik-http-provider/main/ci/docker-deploy.sh` |
+| `lb_admin_variables` | lb_admin_variables map ({ VAR=value, VAR2=value2}) | `{}` |
+||||
+| `k3s_master_count` | k3s master instance count (0 = disable, 1,2,3...N) | `1` |
+| `k3s_master_flavor` | app flavor | `standard-2.2` |
+| `k3s_master_data_enable` | data added disk (true or false)| `false` |
+| `k3s_master_data_size` | data disk size (Go)| `0` |
+| `k3s_master_metric_variables` | metric_enable on k3 master instances ({ VAR=value, VAR2=value2}) | `{}` |
+| `k3s_master_install_script` | k3s master install script url to deploy | `https://raw.githubusercontent.com/pli01/terraform-openstack-k3s/main/samples/app/k3s/k3-master-install.sh` |
+| `k3s_master_variables` | k3s_master_variables map ({ VAR=value, VAR2=value2}) | `{K3S_TOKEN = "_MY_SUPER_K3S_TOKEN_"}` |
+||||
+| `k3s_agent_count` | k3s agent instance count (0 = disable, 1,2,3...N) | `1` |
+| `k3s_agent_flavor` | k3s agent flavor | `standard-2.2` |
+| `k3s_agent_data_enable` | data added disk (true or false)| `false` |
+| `k3s_agent_data_size` | data disk size (Go)| `0` |
+| `k3s_agent_metric_variables` | metric_enable on k3 agent instances ({ VAR=value, VAR2=value2}) | `{}` |
+| `k3s_agent_install_script` | k3s agent install script url to deploy | `https://raw.githubusercontent.com/pli01/terraform-openstack-k3s/main/samples/app/k3s/k3-agent-install.sh` |
+| `k3s_agent_variables` | k3s_agent_variables map ({ VAR=value, VAR2=value2}) | `{K3S_TOKEN = "_MY_SUPER_K3S_TOKEN_"}` |
 
 ### Variables
 You can override terraform variables
