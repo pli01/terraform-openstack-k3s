@@ -77,8 +77,7 @@ module "k3s-master" {
   metric_variables         = var.k3s_master_metric_variables
   app_install_script       = var.k3s_master_install_script
   # app_variables            = var.k3s_master_variables
-  app_variables            = merge({ K3S_HA_CLUSTER = local.k3s_ha_cluster }, var.k3s_master_variables)
-# { K3S_IS_MASTER = var.k3s_master_count > 1 && count.index = 0 ? "true": "false" }
+  app_variables            = merge({ K3S_HA_CLUSTER = local.k3s_ha_cluster, K3S_CLUSTER_HOSTNAME = var.traefik_admin_hostname }, var.k3s_master_variables)
   depends_on = [
     module.base,
     module.bastion,

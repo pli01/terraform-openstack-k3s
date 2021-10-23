@@ -12,7 +12,10 @@ if [ -z "$K3S_TOKEN" ] ;then
 fi
 INSTALL_K3S_EXEC="server"
 INSTALL_K3S_EXEC="$INSTALL_K3S_EXEC --docker"
-#INSTALL_K3S_EXEC="$INSTALL_K3S_EXEC --tls-san $K3S_CLUSTER_HOSTNAME"
+if [ -n "$K3S_CLUSTER_HOSTNAME" ] ;then
+    INSTALL_K3S_EXEC="$INSTALL_K3S_EXEC --tls-san $K3S_CLUSTER_HOSTNAME"
+    export no_proxy="$no_proxy,$K3S_CLUSTER_HOSTNAME"
+fi
 
 if [ "$K3S_HA_CLUSTER" == "true" ] ;then
   echo "### K3S_HA_CLUSTER = $K3S_HA_CLUSTER"
@@ -26,7 +29,7 @@ if [ "$K3S_HA_CLUSTER" == "true" ] ;then
     INSTALL_K3S_EXEC="$INSTALL_K3S_EXEC --cluster-init"
   else
     echo "### K3S_IS_NOT_MASTER"
-    INSTALL_K3S_EXEC="$INSTALL_K3S_EXEC --server https://$K3S_CLUSTER_HOSTNAME:6443"
+    INSTALL_K3S_EXEC="$INSTALL_K3S_EXEC --server https://$K3S_CLUSTER_HOSTNAME"
     exit 0
   fi
 fi
@@ -77,7 +80,6 @@ if [ "$test_result" -gt 0 ] ;then
         echo "$test_status: k3s not ready $test_result"
         exit $test_result
 fi
-
 
 #
 # wait traefik deployment ready
