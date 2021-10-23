@@ -22,15 +22,15 @@ if [ "$K3S_HA_CLUSTER" == "true" ] ;then
    *master-1-*) K3S_IS_MASTER="true" ;;
   esac
   if [ -n "$K3_IS_MASTER" == "true" ] ;then
-   # INSTALL_K3S_EXEC="$INSTALL_K3S_EXEC --cluster-init"
-   echo "### K3S_IS_MASTER = $K3S_IS_MASTER"
+    echo "### K3S_IS_MASTER = $K3S_IS_MASTER"
+    INSTALL_K3S_EXEC="$INSTALL_K3S_EXEC --cluster-init"
   else
-   echo "### K3S_IS_NOT_MASTER = $K3S_IS_MASTER"
-   # INSTALL_K3S_EXEC="$INSTALL_K3S_EXEC --server https://$K3S_CLUSTER_HOSTNAME:6443"
+    echo "### K3S_IS_NOT_MASTER"
+    INSTALL_K3S_EXEC="$INSTALL_K3S_EXEC --server https://$K3S_CLUSTER_HOSTNAME:6443"
+    exit 0
   fi
 fi
 
-exit 0
 # in case of controle plane only without users workload
 #INSTALL_K3S_EXEC="$INSTALL_K3S_EXEC --node-taint CriticalAddonsOnly=true:NoExecute"
 
