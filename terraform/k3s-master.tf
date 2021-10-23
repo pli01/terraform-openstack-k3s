@@ -76,7 +76,9 @@ module "k3s-master" {
   metric_install_script    = var.metric_install_script
   metric_variables         = var.k3s_master_metric_variables
   app_install_script       = var.k3s_master_install_script
-  app_variables            = var.k3s_master_variables
+  # app_variables            = var.k3s_master_variables
+  app_variables            = merge({ K3S_HA_CLUSTER = local.k3s_ha_cluster }, var.k3s_master_variables)
+# { K3S_IS_MASTER = var.k3s_master_count > 1 && count.index = 0 ? "true": "false" }
   depends_on = [
     module.base,
     module.bastion,
@@ -88,6 +90,7 @@ module "k3s-master" {
 locals {
   k3s_master_private_ip        = flatten(module.k3s-master[*].private_ip)
   k3s_master_id                = flatten(module.k3s-master[*].id)
+  k3s_ha_cluster = var.k3s_master_count > 1 ? "true": "false"
 }
 
 output "k3s_master_id" {

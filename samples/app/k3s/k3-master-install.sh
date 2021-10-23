@@ -1,5 +1,6 @@
 #!/bin/bash
 set -x
+
 # insecure curl
 echo "-k" >> ~/.curlrc
 
@@ -11,8 +12,22 @@ if [ -z "$K3S_TOKEN" ] ;then
 fi
 INSTALL_K3S_EXEC="server"
 INSTALL_K3S_EXEC="$INSTALL_K3S_EXEC --docker"
+#INSTALL_K3S_EXEC="$INSTALL_K3S_EXEC --tls-san $K3S_CLUSTER_HOSTNAME"
+
+if [ "$K3S_HA_CLUSTER" == "true" ] ;then
+  echo "### K3S_HA_CLUSTER = $K3S_HA_CLUSTER"
+  if [ -n "$K3_IS_MASTER" == "true" ] ;then
+   # INSTALL_K3S_EXEC="$INSTALL_K3S_EXEC --cluster-init"
+   echo "### K3S_IS_MASTER = $K3S_IS_MASTER"
+  else
+   echo "### K3S_IS_NOT_MASTER = $K3S_IS_MASTER"
+   # INSTALL_K3S_EXEC="$INSTALL_K3S_EXEC --server https://$K3S_CLUSTER_HOSTNAME:6443"
+  fi
+fi
+
+exit 0
 # in case of controle plane only without users workload
-# INSTALL_K3S_EXEC="$INSTALL_K3S_EXEC --node-taint CriticalAddonsOnly=true:NoExecute"
+#INSTALL_K3S_EXEC="$INSTALL_K3S_EXEC --node-taint CriticalAddonsOnly=true:NoExecute"
 
 #
 # download and install k3s
@@ -111,7 +126,6 @@ spec:
     - "--serversTransport.insecureSkipVerify=true"
 EOF
 sudo -E kubectl rollout status  deployment/traefik -n kube-system -w  --timeout=${DEFAULT_TIMEOUT}s
-
 
 #
 # optional install portainer agent (9001)
