@@ -30,7 +30,6 @@ if [ "$K3S_HA_CLUSTER" == "true" ] ;then
   else
     echo "### K3S_IS_NOT_MASTER"
     INSTALL_K3S_EXEC="$INSTALL_K3S_EXEC --server https://$K3S_CLUSTER_HOSTNAME"
-    exit 0
   fi
 fi
 
@@ -60,6 +59,9 @@ if [ "$test_result" -gt 0 ] ;then
         exit $test_result
 fi
 
+if [ "$K3S_HA_CLUSTER" == "true" -a "$K3S_IS_MASTER" == "false" ] ;then
+  exit 0
+fi
 #
 # wait k3s ready
 #
