@@ -21,7 +21,7 @@ if [ "$K3S_HA_CLUSTER" == "true" ] ;then
   case "$(hostname)" in
    *master-1-*) K3S_IS_MASTER="true" ;;
   esac
-  if [ -n "$K3S_IS_MASTER" == "true" ] ;then
+  if [ "$K3S_IS_MASTER" == "true" ] ;then
     echo "### K3S_IS_MASTER = $K3S_IS_MASTER"
     INSTALL_K3S_EXEC="$INSTALL_K3S_EXEC --cluster-init"
   else
