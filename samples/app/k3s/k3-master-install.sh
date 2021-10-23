@@ -16,6 +16,11 @@ INSTALL_K3S_EXEC="$INSTALL_K3S_EXEC --docker"
 
 if [ "$K3S_HA_CLUSTER" == "true" ] ;then
   echo "### K3S_HA_CLUSTER = $K3S_HA_CLUSTER"
+  K3_IS_MASTER="false"
+  # Quick: detect master on hostname index
+  case "$(hostname)" in
+   *master-1-*) K3_IS_MASTER="true" ;;
+  esac
   if [ -n "$K3_IS_MASTER" == "true" ] ;then
    # INSTALL_K3S_EXEC="$INSTALL_K3S_EXEC --cluster-init"
    echo "### K3S_IS_MASTER = $K3S_IS_MASTER"
