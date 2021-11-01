@@ -12,11 +12,6 @@ if [ -z "$K3S_TOKEN" ] ;then
 fi
 INSTALL_K3S_EXEC="server"
 INSTALL_K3S_EXEC="$INSTALL_K3S_EXEC --docker"
-if [ -n "$K3S_CLUSTER_HOSTNAME" ] ;then
-    INSTALL_K3S_EXEC="$INSTALL_K3S_EXEC --tls-san $K3S_CLUSTER_HOSTNAME"
-    export no_proxy="$no_proxy,$K3S_CLUSTER_HOSTNAME"
-fi
-
 if [ "$K3S_HA_CLUSTER" == "true" ] ;then
   echo "### K3S_HA_CLUSTER = $K3S_HA_CLUSTER"
   K3S_IS_MASTER="false"
@@ -26,11 +21,17 @@ if [ "$K3S_HA_CLUSTER" == "true" ] ;then
   esac
   if [ "$K3S_IS_MASTER" == "true" ] ;then
     echo "### K3S_IS_MASTER = $K3S_IS_MASTER"
+    if [ -n "$K3S_CLUSTER_HOSTNAME" ] ;then
+      INSTALL_K3S_EXEC="$INSTALL_K3S_EXEC --tls-san $K3S_CLUSTER_HOSTNAME"
+    fi
     INSTALL_K3S_EXEC="$INSTALL_K3S_EXEC --cluster-init"
-  else
+   else
     echo "### K3S_IS_NOT_MASTER"
-    INSTALL_K3S_EXEC="$INSTALL_K3S_EXEC --server https://$K3S_CLUSTER_HOSTNAME"
+    export K3S_URL="https://$K3S_CLUSTER_HOSTNAME"
   fi
+fi
+if [ -n "$K3S_CLUSTER_HOSTNAME" ] ;then
+   export no_proxy="$no_proxy,$K3S_CLUSTER_HOSTNAME"
 fi
 
 # in case of controle plane only without users workload
