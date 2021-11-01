@@ -27,7 +27,7 @@ if [ "$K3S_HA_CLUSTER" == "true" ] ;then
     INSTALL_K3S_EXEC="$INSTALL_K3S_EXEC --cluster-init"
    else
     echo "### K3S_IS_NOT_MASTER"
-    export K3S_URL="https://$K3S_CLUSTER_HOSTNAME"
+    export K3S_URL="${K3S_URL:-https://$K3S_CLUSTER_HOSTNAME:6443}"
   fi
 fi
 if [ -n "$K3S_CLUSTER_HOSTNAME" ] ;then
