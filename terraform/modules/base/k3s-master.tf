@@ -54,6 +54,17 @@ resource "openstack_networking_secgroup_rule_v2" "k3s_kubelet_worker_k3s_master_
   security_group_id = openstack_networking_secgroup_v2.k3s_master_secgroup_1.id
 }
 
+# Add 2379-2380 to k3s_master
+resource "openstack_networking_secgroup_rule_v2" "k3s_ha_worker_k3s_master_secgroup_rule_1" {
+  direction         = "ingress"
+  ethertype         = "IPv4"
+  protocol          = "tcp"
+  port_range_min    = 2379
+  port_range_max    = 2380
+  remote_ip_prefix  = var.network_worker["cidr"]
+  security_group_id = openstack_networking_secgroup_v2.k3s_master_secgroup_1.id
+}
+
 # Add http to k3s_master
 resource "openstack_networking_secgroup_rule_v2" "http_worker_k3s_master_secgroup_rule_1" {
   direction         = "ingress"
