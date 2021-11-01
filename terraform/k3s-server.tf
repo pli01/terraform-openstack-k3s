@@ -1,59 +1,59 @@
 # application stack
-variable "k3s_master_count" {
+variable "k3s_server_count" {
   type    = number
   default = 1
 }
-variable "k3s_master_flavor" {
+variable "k3s_server_flavor" {
   type    = string
   default = "t1.small"
 }
-variable "k3s_master_data_enable" {
+variable "k3s_server_data_enable" {
   type = bool
   default = false
 }
-variable "k3s_master_data_size" {
+variable "k3s_server_data_size" {
   type = number
   default = 0
 }
 
-variable "k3s_master_name" {
-  default = "k3s-master"
+variable "k3s_server_name" {
+  default = "k3s-server"
 }
 
 
-variable "k3s_master_install_script" {
+variable "k3s_server_install_script" {
   default = "https://raw.githubusercontent.com/pli01/terraform-openstack-k3s/main/samples/app/k3s/k3-master-install.sh"
 }
-variable "k3s_master_variables" {
+variable "k3s_server_variables" {
     type = map
     default = {}
 }
-variable "k3s_master_metric_variables" {
+variable "k3s_server_metric_variables" {
   type = map
   default = {}
 }
 
-resource "openstack_blockstorage_volume_v2" "k3s-master-data_volume" {
-  count = var.k3s_master_data_enable ? var.k3s_master_count : 0
-  name        = format("%s-%s-%s-%s", var.prefix_name, var.k3s_master_name, count.index + 1, "data-volume")
-  size        = var.k3s_master_data_size
+resource "openstack_blockstorage_volume_v2" "k3s-server-data_volume" {
+  count = var.k3s_server_data_enable ? var.k3s_server_count : 0
+  name        = format("%s-%s-%s-%s", var.prefix_name, var.k3s_server_name, count.index + 1, "data-volume")
+  size        = var.k3s_server_data_size
   volume_type = var.vol_type
 }
 
-module "k3s-master" {
+module "k3s-server" {
   source                   = "./modules/app"
-  maxcount                 = var.k3s_master_count
+  maxcount                 = var.k3s_server_count
   prefix_name              = var.prefix_name
-  app_name                 = var.k3s_master_name
+  app_name                 = var.k3s_server_name
   heat_wait_condition_timeout =  var.heat_wait_condition_timeout
   network                  = module.base.network_id
   subnet                   = module.base.subnet_id
   source_volid             = module.base.root_volume_id
   security_group           = module.base.k3s_master_secgroup_id
-  app_data_enable          = var.k3s_master_data_enable
-  worker_data_volume_id    = openstack_blockstorage_volume_v2.k3s-master-data_volume[*].id
+  app_data_enable          = var.k3s_server_data_enable
+  worker_data_volume_id    = openstack_blockstorage_volume_v2.k3s-server-data_volume[*].id
   vol_type                 = var.vol_type
-  flavor                   = var.k3s_master_flavor
+  flavor                   = var.k3s_server_flavor
   image                    = var.image
   key_name                 = var.key_name
   no_proxy                 = var.no_proxy
@@ -74,10 +74,10 @@ module "k3s-master" {
   docker_registry_token    = var.docker_registry_token
   metric_enable            = var.metric_enable
   metric_install_script    = var.metric_install_script
-  metric_variables         = var.k3s_master_metric_variables
-  app_install_script       = var.k3s_master_install_script
-  # app_variables            = var.k3s_master_variables
-  app_variables            = merge({ K3S_HA_CLUSTER = var.k3s_ha_cluster, K3S_CLUSTER_HOSTNAME = join("",var.traefik_admin_hostname) }, var.k3s_master_variables)
+  metric_variables         = var.k3s_server_metric_variables
+  app_install_script       = var.k3s_server_install_script
+  # app_variables            = var.k3s_server_variables
+  app_variables            = merge({ K3S_HA_CLUSTER = var.k3s_ha_cluster, K3S_CLUSTER_HOSTNAME = join("",local.k3s_master_private_ip) ,  K3S_URL = format("https://%s:6443",join("",local.k3s_master_private_ip))},  var.k3s_server_variables)
   depends_on = [
     module.base,
     module.bastion,
@@ -87,14 +87,14 @@ module "k3s-master" {
 
 # output
 locals {
-  k3s_master_private_ip        = flatten(module.k3s-master[*].private_ip)
-  k3s_master_id                = flatten(module.k3s-master[*].id)
+  k3s_server_private_ip        = flatten(module.k3s-server[*].private_ip)
+  k3s_server_id                = flatten(module.k3s-server[*].id)
 }
 
-output "k3s_master_id" {
-  value = local.k3s_master_id
+output "k3s_server_id" {
+  value = local.k3s_server_id
 }
-output "k3s_master_private_ip" {
-  value = local.k3s_master_private_ip
+output "k3s_server_private_ip" {
+  value = local.k3s_server_private_ip
 }
 

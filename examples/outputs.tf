@@ -25,6 +25,14 @@ output "k3s_master_private_ip" {
   value = module.k3s-cluster.k3s_master_private_ip
 }
 
+output "k3s_server_id" {
+  value = module.k3s-cluster.k3s_server_id
+}
+output "k3s_server_private_ip" {
+  value = module.k3s-cluster.k3s_server_private_ip
+}
+
+
 output "k3s_agent_id" {
   value = module.k3s-cluster.k3s_agent_id
 }

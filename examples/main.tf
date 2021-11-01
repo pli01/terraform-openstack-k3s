@@ -36,6 +36,8 @@ module "k3s-cluster" {
   metric_enable                 = var.metric_enable
   traefik_user_hostname         = var.traefik_user_hostname
   traefik_admin_hostname     = var.traefik_admin_hostname
+
+  k3s_ha_cluster = var.k3s_ha_cluster
   k3s_master_count              = var.k3s_master_count
   k3s_master_flavor             = var.k3s_master_flavor
   k3s_master_metric_variables   = var.k3s_master_metric_variables
@@ -43,6 +45,14 @@ module "k3s-cluster" {
   k3s_master_data_size          = var.k3s_master_data_size
   k3s_master_install_script     = var.k3s_master_install_script
   k3s_master_variables          = var.k3s_master_variables
+
+  k3s_server_count              = var.k3s_server_count
+  k3s_server_flavor             = var.k3s_server_flavor
+  k3s_server_metric_variables   = var.k3s_server_metric_variables
+  k3s_server_data_enable        = var.k3s_server_data_enable
+  k3s_server_data_size          = var.k3s_server_data_size
+  k3s_server_install_script     = var.k3s_server_install_script
+  k3s_server_variables          = var.k3s_server_variables
 
   k3s_agent_count               = var.k3s_agent_count
   k3s_agent_flavor              = var.k3s_agent_flavor

@@ -183,6 +183,39 @@ variable "k3s_master_variables" {
    default = {}
 }
 
+variable "k3s_ha_cluster" {
+  type = bool
+  default  = false
+}
+
+
+variable "k3s_server_count" {
+  type    = number
+  default = 1
+}
+variable "k3s_server_flavor" {
+  type    = string
+  default = "t1.small"
+}
+variable "k3s_server_data_enable" {
+  type = bool
+}
+variable "k3s_server_data_size" {
+  type = number
+}
+variable "k3s_server_metric_variables" {
+   type = map
+   default = {}
+}
+variable "k3s_server_install_script" {
+  default = ""
+}
+variable "k3s_server_variables" {
+   type = map
+   default = {}
+}
+
+
 #
 variable "k3s_agent_count" {
   type    = number

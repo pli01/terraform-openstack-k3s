@@ -157,4 +157,7 @@ variable "metric_install_script" {
   default = "https://raw.githubusercontent.com/pli01/beat-stack/master/ci/docker-deploy.sh"
 }
 
-
+variable "k3s_ha_cluster" {
+  type = bool
+  default = false
+}
